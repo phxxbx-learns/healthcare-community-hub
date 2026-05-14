@@ -1,0 +1,2152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Healthcare Communication Hub</title>
+<style>
+/* ============================================================
+   CSS VARIABLES & RESET
+   ============================================================ */
+:root {
+  --white: #ffffff;
+  --bg: #f4f7fa;
+  --blue-soft: #e8f0fe;
+  --blue: #2563b0;
+  --blue-dark: #1a4a8a;
+  --teal: #0d9488;
+  --teal-light: #ccfbf1;
+  --teal-dark: #0f766e;
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-400: #94a3b8;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1e293b;
+  --green: #16a34a;
+  --green-light: #dcfce7;
+  --red-light: #fee2e2;
+  --red: #dc2626;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.05);
+  --shadow: 0 4px 16px rgba(37,99,176,0.08), 0 1px 4px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 32px rgba(37,99,176,0.12), 0 2px 8px rgba(0,0,0,0.07);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+  --font-display: 'Georgia', 'Times New Roman', serif;
+  --font-body: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--gray-700);
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+img { max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: var(--font-body); }
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+.display { font-family: var(--font-display); }
+h1, h2, h3, h4 { color: var(--gray-800); line-height: 1.25; }
+h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-family: var(--font-display); }
+h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); font-family: var(--font-display); }
+h3 { font-size: 1.2rem; }
+h4 { font-size: 1rem; }
+p { color: var(--gray-600); }
+
+/* ============================================================
+   UTILITY
+   ============================================================ */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 80px 0; }
+.section-alt { background: var(--white); }
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--teal-light); color: var(--teal-dark);
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.04em;
+  padding: 4px 12px; border-radius: 100px; text-transform: uppercase;
+}
+.badge-blue { background: var(--blue-soft); color: var(--blue-dark); }
+.badge-green { background: var(--green-light); color: var(--green); }
+.section-label {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+}
+.section-label::after {
+  content: ''; flex: 1; height: 2px;
+  background: linear-gradient(to right, var(--teal-light), transparent);
+  border-radius: 2px;
+}
+.divider {
+  height: 3px; width: 60px; border-radius: 3px;
+  background: linear-gradient(90deg, var(--teal), var(--blue));
+  margin: 16px 0 28px;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 24px; border-radius: var(--radius-sm);
+  font-size: 0.95rem; font-weight: 600;
+  border: none; transition: all var(--transition);
+  position: relative; overflow: hidden;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  color: var(--white);
+  box-shadow: 0 4px 14px rgba(13,148,136,0.3);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(13,148,136,0.4);
+}
+.btn-outline {
+  background: rgba(255,255,255,0.15);
+  color: var(--white);
+  border: 2px solid rgba(255,255,255,0.6);
+  backdrop-filter: blur(4px);
+}
+.btn-outline:hover {
+  background: rgba(255,255,255,0.25);
+  transform: translateY(-2px);
+}
+.btn-ghost {
+  background: var(--white);
+  color: var(--teal-dark);
+  border: 2px solid var(--teal);
+  box-shadow: var(--shadow-sm);
+}
+.btn-ghost:hover {
+  background: var(--teal);
+  color: var(--white);
+  transform: translateY(-1px);
+}
+.btn-sm { padding: 8px 16px; font-size: 0.85rem; }
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+#navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--gray-200);
+  transition: box-shadow var(--transition);
+}
+#navbar.scrolled { box-shadow: var(--shadow); }
+.nav-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 70px;
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 12px;
+}
+.nav-logo {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; color: white;
+  flex-shrink: 0;
+}
+.nav-brand-text { line-height: 1.2; }
+.nav-brand-text .title { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: var(--gray-800); }
+.nav-brand-text .subtitle { font-size: 0.7rem; color: var(--gray-400); letter-spacing: 0.05em; text-transform: uppercase; }
+.nav-links {
+  display: flex; align-items: center; gap: 4px;
+  list-style: none;
+}
+.nav-links a {
+  padding: 8px 14px; border-radius: var(--radius-sm);
+  font-size: 0.88rem; font-weight: 500;
+  color: var(--gray-600);
+  transition: all var(--transition);
+}
+.nav-links a:hover, .nav-links a.active {
+  background: var(--teal-light);
+  color: var(--teal-dark);
+}
+.nav-menu-btn {
+  display: none; background: none; border: none; padding: 8px;
+  font-size: 1.5rem; color: var(--gray-700);
+}
+.mobile-menu {
+  display: none; flex-direction: column;
+  background: var(--white); border-top: 1px solid var(--gray-200);
+  padding: 12px 24px 20px;
+  box-shadow: var(--shadow);
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  padding: 10px 0; border-bottom: 1px solid var(--gray-100);
+  font-size: 0.95rem; color: var(--gray-700);
+  transition: color var(--transition);
+}
+.mobile-menu a:hover { color: var(--teal); }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+#hero {
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, #0f3460 0%, #1a4a8a 35%, #0d9488 70%, #065f46 100%);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  padding-top: 70px;
+}
+.hero-pattern {
+  position: absolute; inset: 0; opacity: 0.06;
+  background-image:
+    radial-gradient(circle at 1px 1px, white 1px, transparent 0);
+  background-size: 40px 40px;
+}
+.hero-circles {
+  position: absolute; inset: 0; pointer-events: none;
+}
+.hero-circle {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.hc1 { width: 500px; height: 500px; top: -100px; right: -100px; }
+.hc2 { width: 300px; height: 300px; bottom: 50px; left: -80px; }
+.hc3 { width: 200px; height: 200px; top: 50%; right: 20%; transform: translateY(-50%); }
+.hero-content {
+  position: relative; z-index: 2;
+  text-align: center; padding: 60px 24px;
+  max-width: 800px; margin: 0 auto;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.9);
+  font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 6px 16px;
+  border-radius: 100px; border: 1px solid rgba(255,255,255,0.2);
+  margin-bottom: 28px;
+  backdrop-filter: blur(4px);
+}
+.hero-content h1 {
+  color: white; margin-bottom: 20px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+}
+.hero-content p {
+  color: rgba(255,255,255,0.85); font-size: 1.1rem;
+  max-width: 600px; margin: 0 auto 40px;
+}
+.hero-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.hero-stats {
+  display: flex; gap: 40px; justify-content: center;
+  margin-top: 60px; flex-wrap: wrap;
+}
+.hero-stat {
+  text-align: center; color: white;
+}
+.hero-stat strong { display: block; font-size: 2rem; font-family: var(--font-display); }
+.hero-stat span { font-size: 0.8rem; color: rgba(255,255,255,0.7); letter-spacing: 0.05em; text-transform: uppercase; }
+.scroll-indicator {
+  position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  color: rgba(255,255,255,0.6); font-size: 0.75rem; letter-spacing: 0.08em;
+  text-transform: uppercase; animation: bounce 2s infinite;
+}
+.scroll-indicator::before {
+  content: '↓'; font-size: 1.2rem;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(6px); }
+}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 28px;
+  transition: all var(--transition);
+  border: 1px solid var(--gray-100);
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+.card-icon {
+  width: 52px; height: 52px;
+  border-radius: 12px; font-size: 1.5rem;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+}
+.ci-teal { background: var(--teal-light); }
+.ci-blue { background: var(--blue-soft); }
+.ci-green { background: var(--green-light); }
+.ci-red { background: var(--red-light); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+/* ============================================================
+   ABOUT
+   ============================================================ */
+.about-layout {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+}
+.about-visual {
+  position: relative;
+}
+.about-main-card {
+  background: linear-gradient(135deg, var(--blue-dark), var(--teal-dark));
+  color: white; border-radius: var(--radius-lg);
+  padding: 40px; position: relative; overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.about-main-card::before {
+  content: ''; position: absolute; top: -30px; right: -30px;
+  width: 180px; height: 180px; border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+.about-main-card h3 { color: white; font-size: 1.5rem; margin-bottom: 12px; }
+.about-main-card p { color: rgba(255,255,255,0.8); }
+.about-float-cards {
+  display: flex; flex-direction: column; gap: 12px; margin-top: 16px;
+}
+.about-float {
+  background: var(--white); border-radius: var(--radius);
+  padding: 14px 18px; box-shadow: var(--shadow);
+  display: flex; align-items: center; gap: 12px;
+  transition: all var(--transition);
+}
+.about-float:hover { transform: translateX(4px); }
+.about-float-icon { font-size: 1.4rem; flex-shrink: 0; }
+.about-float strong { display: block; font-size: 0.9rem; color: var(--gray-800); }
+.about-float span { font-size: 0.78rem; color: var(--gray-400); }
+.about-features { list-style: none; margin-top: 16px; }
+.about-features li {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--gray-100);
+  font-size: 0.95rem; color: var(--gray-600);
+}
+.about-features li::before {
+  content: '✓'; color: var(--teal); font-weight: 700; margin-top: 1px; flex-shrink: 0;
+}
+
+/* ============================================================
+   LETTERS SECTION
+   ============================================================ */
+.letters-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 32px; }
+.guide-cards { display: flex; flex-direction: column; gap: 14px; }
+.guide-card {
+  background: var(--white); border: 1px solid var(--gray-200);
+  border-radius: var(--radius); overflow: hidden;
+  box-shadow: var(--shadow-sm); transition: all var(--transition);
+}
+.guide-card:hover { box-shadow: var(--shadow); }
+.guide-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; cursor: pointer;
+  transition: background var(--transition);
+}
+.guide-header:hover { background: var(--gray-50); }
+.guide-header-left { display: flex; align-items: center; gap: 12px; }
+.guide-emoji { font-size: 1.3rem; }
+.guide-title { font-weight: 600; font-size: 0.95rem; color: var(--gray-800); }
+.guide-subtitle { font-size: 0.78rem; color: var(--gray-400); }
+.guide-chevron {
+  color: var(--gray-400); font-size: 1rem;
+  transition: transform var(--transition);
+}
+.guide-card.open .guide-chevron { transform: rotate(180deg); }
+.guide-body {
+  display: none; padding: 0 20px 16px;
+  font-size: 0.88rem; color: var(--gray-600);
+}
+.guide-card.open .guide-body { display: block; }
+.guide-body ul { padding-left: 16px; margin-top: 8px; }
+.guide-body li { margin-bottom: 4px; }
+.guide-body .btn { margin-top: 12px; }
+.letter-preview {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow); overflow: hidden;
+}
+.letter-preview-header {
+  background: linear-gradient(135deg, var(--blue-dark), var(--teal-dark));
+  color: white; padding: 20px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.letter-preview-header h3 { color: white; font-size: 1rem; }
+.letter-tabs {
+  display: flex; gap: 0; background: var(--gray-100);
+  padding: 4px; border-radius: 8px; margin: 20px 24px 0;
+}
+.letter-tab {
+  flex: 1; padding: 7px 12px; text-align: center;
+  font-size: 0.82rem; font-weight: 600; color: var(--gray-400);
+  border-radius: 6px; cursor: pointer; transition: all var(--transition);
+  background: none; border: none;
+}
+.letter-tab.active { background: var(--white); color: var(--teal-dark); box-shadow: var(--shadow-sm); }
+.letter-body { padding: 20px 24px; }
+.doc-paper {
+  background: #fefefe; border: 1px solid var(--gray-200);
+  border-radius: 8px; padding: 24px;
+  font-family: 'Courier New', monospace; font-size: 0.8rem;
+  line-height: 1.7; color: var(--gray-700);
+  min-height: 220px; display: none;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+.doc-paper.active { display: block; }
+.doc-paper .doc-header { text-align: center; border-bottom: 2px solid var(--gray-800); padding-bottom: 12px; margin-bottom: 16px; }
+.doc-paper .doc-logo { font-size: 1.4rem; margin-bottom: 4px; }
+.doc-paper .doc-org { font-weight: 700; font-size: 0.9rem; letter-spacing: 0.05em; color: var(--gray-800); }
+.doc-paper .doc-sub { font-size: 0.7rem; color: var(--gray-500); }
+.doc-paper .doc-title { text-align: center; font-weight: 700; text-decoration: underline; margin: 12px 0; font-size: 0.85rem; }
+.tips-panel { background: var(--teal-light); border-radius: var(--radius); padding: 20px 24px; margin: 0 24px 20px; }
+.tips-panel h4 { color: var(--teal-dark); margin-bottom: 10px; font-size: 0.95rem; }
+.tips-panel ul { list-style: none; }
+.tips-panel li { font-size: 0.85rem; color: var(--teal-dark); padding: 4px 0; display: flex; gap: 8px; }
+.tips-panel li::before { content: '💡'; flex-shrink: 0; }
+
+/* ============================================================
+   MEMO SECTION
+   ============================================================ */
+.memo-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; align-items: start; }
+.memo-paper {
+  background: var(--white); border: 1px solid var(--gray-200);
+  border-radius: var(--radius); padding: 28px;
+  box-shadow: var(--shadow); font-family: 'Courier New', monospace;
+  font-size: 0.82rem; line-height: 1.8; color: var(--gray-700);
+}
+.memo-paper .memo-top {
+  border-bottom: 3px double var(--gray-800); padding-bottom: 16px; margin-bottom: 16px;
+}
+.memo-paper .memo-org { text-align: center; font-family: var(--font-display); margin-bottom: 12px; }
+.memo-paper .memo-org .name { font-size: 1rem; font-weight: 700; color: var(--gray-800); }
+.memo-paper .memo-org .dept { font-size: 0.75rem; color: var(--gray-500); }
+.memo-paper .memo-heading { font-size: 1rem; font-weight: 700; text-align: center; letter-spacing: 0.1em; color: var(--blue-dark); margin-bottom: 12px; }
+.memo-paper .memo-fields { }
+.memo-paper .memo-field { display: flex; gap: 12px; border-bottom: 1px dashed var(--gray-200); padding: 5px 0; }
+.memo-paper .memo-label { font-weight: 700; min-width: 80px; color: var(--gray-800); }
+.memo-paper .memo-value { color: var(--gray-600); }
+.memo-paper .memo-body { margin-top: 16px; }
+.memo-examples { display: flex; flex-direction: column; gap: 12px; }
+.memo-ex-card {
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid var(--gray-200); padding: 16px 20px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer; transition: all var(--transition);
+  display: flex; align-items: center; gap: 14px;
+}
+.memo-ex-card:hover {
+  border-color: var(--teal);
+  box-shadow: var(--shadow);
+  transform: translateX(4px);
+}
+.memo-ex-card.selected { border-color: var(--teal); background: var(--teal-light); }
+.memo-ex-icon { font-size: 1.5rem; flex-shrink: 0; }
+.memo-ex-title { font-weight: 600; font-size: 0.9rem; color: var(--gray-800); }
+.memo-ex-desc { font-size: 0.78rem; color: var(--gray-400); }
+
+/* ============================================================
+   EMAIL SECTION
+   ============================================================ */
+.email-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.email-client {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow); overflow: hidden; border: 1px solid var(--gray-200);
+}
+.email-client-bar {
+  background: var(--blue-dark); color: white; padding: 14px 20px;
+  display: flex; align-items: center; gap: 10px; font-size: 0.85rem;
+}
+.email-dot { width: 10px; height: 10px; border-radius: 50%; }
+.ed-r { background: #ff5f57; }
+.ed-y { background: #febc2e; }
+.ed-g { background: #28c840; }
+.email-compose {
+  padding: 20px;
+}
+.email-field {
+  border-bottom: 1px solid var(--gray-100); padding: 10px 0;
+  display: flex; gap: 10px; font-size: 0.85rem;
+}
+.ef-label { font-weight: 600; color: var(--gray-400); min-width: 70px; font-size: 0.82rem; }
+.ef-value { color: var(--gray-700); flex: 1; }
+.email-body-content {
+  padding: 16px 0; font-size: 0.85rem; color: var(--gray-600); line-height: 1.8;
+  border-bottom: 1px solid var(--gray-100); min-height: 180px;
+}
+.email-rules { display: flex; flex-direction: column; gap: 12px; }
+.email-rule-card {
+  background: var(--white); border-radius: var(--radius);
+  padding: 16px 18px; box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--teal);
+  display: flex; gap: 12px; align-items: flex-start;
+  transition: all var(--transition);
+}
+.email-rule-card:hover { box-shadow: var(--shadow); transform: translateX(3px); }
+.email-rule-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+.email-rule-title { font-weight: 600; font-size: 0.9rem; color: var(--gray-800); }
+.email-rule-desc { font-size: 0.82rem; color: var(--gray-500); margin-top: 3px; }
+
+/* ============================================================
+   SCENARIOS
+   ============================================================ */
+.scenario-card {
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid var(--gray-200); box-shadow: var(--shadow-sm);
+  overflow: hidden; transition: all var(--transition);
+}
+.scenario-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+.scenario-top {
+  padding: 20px; background: linear-gradient(135deg, var(--blue-soft), var(--teal-light));
+}
+.scenario-icon { font-size: 2rem; margin-bottom: 8px; }
+.scenario-type {
+  display: inline-block; font-size: 0.7rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  background: var(--teal); color: white;
+  padding: 3px 10px; border-radius: 100px; margin-bottom: 8px;
+}
+.scenario-title { font-weight: 700; font-size: 1rem; color: var(--gray-800); }
+.scenario-body { padding: 20px; }
+.scenario-body p { font-size: 0.85rem; color: var(--gray-600); margin-bottom: 12px; }
+.scenario-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.scenario-tag {
+  font-size: 0.72rem; padding: 3px 10px;
+  background: var(--gray-100); color: var(--gray-600);
+  border-radius: 100px;
+}
+
+/* ============================================================
+   WRITING TIPS
+   ============================================================ */
+.tips-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.tip-card {
+  background: var(--white); border-radius: var(--radius);
+  padding: 28px 24px; box-shadow: var(--shadow);
+  text-align: center; transition: all var(--transition);
+  position: relative; overflow: hidden;
+}
+.tip-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--teal), var(--blue));
+}
+.tip-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.tip-icon { font-size: 2.2rem; margin-bottom: 14px; }
+.tip-title { font-weight: 700; font-size: 1rem; color: var(--gray-800); margin-bottom: 8px; }
+.tip-desc { font-size: 0.85rem; color: var(--gray-500); }
+
+/* ============================================================
+   MISTAKES (DO/DON'T)
+   ============================================================ */
+.dodonts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.do-card { border-left: 4px solid var(--green); background: var(--green-light); border-radius: var(--radius); padding: 24px; }
+.dont-card { border-left: 4px solid var(--red); background: var(--red-light); border-radius: var(--radius); padding: 24px; }
+.dd-title { font-weight: 700; font-size: 1rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.do-title { color: var(--green); }
+.dont-title { color: var(--red); }
+.dd-list { list-style: none; }
+.dd-list li { padding: 5px 0; font-size: 0.88rem; display: flex; gap: 8px; align-items: flex-start; }
+.do-list li { color: #166534; }
+.dont-list li { color: #991b1b; }
+.do-list li::before { content: '✅'; flex-shrink: 0; }
+.dont-list li::before { content: '❌'; flex-shrink: 0; }
+
+/* ============================================================
+   BLOG / SEARCH
+   ============================================================ */
+.search-bar {
+  display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap;
+}
+.search-input-wrap {
+  flex: 1; min-width: 240px; position: relative;
+}
+.search-input-wrap::before {
+  content: '🔍'; position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  font-size: 0.9rem;
+}
+.search-input {
+  width: 100%; padding: 12px 16px 12px 40px;
+  border: 2px solid var(--gray-200); border-radius: var(--radius-sm);
+  font-size: 0.95rem; color: var(--gray-700);
+  background: var(--white); transition: all var(--transition);
+}
+.search-input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(13,148,136,0.1); }
+.filter-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.filter-btn {
+  padding: 10px 18px; border-radius: 100px;
+  font-size: 0.85rem; font-weight: 600;
+  border: 2px solid var(--gray-200);
+  background: var(--white); color: var(--gray-600);
+  transition: all var(--transition);
+}
+.filter-btn.active, .filter-btn:hover {
+  background: var(--teal); color: white; border-color: var(--teal);
+}
+.blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.blog-card {
+  background: var(--white); border-radius: var(--radius);
+  box-shadow: var(--shadow-sm); border: 1px solid var(--gray-100);
+  overflow: hidden; transition: all var(--transition);
+}
+.blog-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+.blog-card[hidden] { display: none; }
+.blog-img {
+  height: 120px; display: flex; align-items: center; justify-content: center;
+  font-size: 3rem;
+}
+.bg-teal { background: linear-gradient(135deg, var(--teal-light), #a7f3d0); }
+.bg-blue { background: linear-gradient(135deg, var(--blue-soft), #bfdbfe); }
+.bg-green { background: linear-gradient(135deg, var(--green-light), #bbf7d0); }
+.bg-purple { background: linear-gradient(135deg, #f3e8ff, #e9d5ff); }
+.bg-orange { background: linear-gradient(135deg, #fff7ed, #fed7aa); }
+.bg-pink { background: linear-gradient(135deg, #fdf2f8, #fbcfe8); }
+.blog-content { padding: 18px; }
+.blog-cat {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--teal); margin-bottom: 6px;
+}
+.blog-title { font-weight: 700; font-size: 0.95rem; color: var(--gray-800); margin-bottom: 8px; line-height: 1.3; }
+.blog-excerpt { font-size: 0.82rem; color: var(--gray-500); margin-bottom: 12px; }
+.blog-meta { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--gray-400); }
+.no-results {
+  display: none; text-align: center; padding: 60px 20px;
+  color: var(--gray-400); font-size: 1rem;
+  grid-column: 1/-1;
+}
+.no-results.show { display: block; }
+
+/* ============================================================
+   CONTACT / FOOTER
+   ============================================================ */
+#contact { background: var(--gray-800); color: white; padding: 80px 0 0; }
+.contact-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 40px; padding-bottom: 60px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.contact-brand .logo-wrap {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+}
+.contact-brand .logo {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  border-radius: 10px; display: flex; align-items: center;
+  justify-content: center; font-size: 1.4rem; flex-shrink: 0;
+}
+.contact-brand .brand-name { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; }
+.contact-brand .brand-sub { font-size: 0.75rem; color: rgba(255,255,255,0.5); }
+.contact-brand p { color: rgba(255,255,255,0.6); font-size: 0.88rem; margin-bottom: 20px; }
+.social-links { display: flex; gap: 10px; }
+.social-link {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; transition: all var(--transition);
+  text-decoration: none;
+}
+.social-link:hover { background: var(--teal); transform: translateY(-2px); }
+.contact-col h4 { color: white; font-size: 0.95rem; margin-bottom: 16px; }
+.contact-col ul { list-style: none; }
+.contact-col li { padding: 5px 0; }
+.contact-col a { color: rgba(255,255,255,0.6); font-size: 0.88rem; transition: color var(--transition); }
+.contact-col a:hover { color: var(--teal); }
+.contact-info-item { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; }
+.contact-info-icon { font-size: 1rem; flex-shrink: 0; margin-top: 2px; }
+.contact-info-text { color: rgba(255,255,255,0.6); font-size: 0.85rem; }
+.contact-info-text strong { display: block; color: rgba(255,255,255,0.9); font-size: 0.9rem; }
+.footer-bottom {
+  padding: 20px 0; display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-bottom p { color: rgba(255,255,255,0.4); font-size: 0.82rem; }
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--white); border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  max-width: 680px; width: 100%; max-height: 90vh; overflow-y: auto;
+  animation: modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.92) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-header {
+  background: linear-gradient(135deg, var(--blue-dark), var(--teal-dark));
+  color: white; padding: 24px 28px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-header h3 { color: white; font-size: 1.1rem; }
+.modal-close {
+  background: rgba(255,255,255,0.2); border: none; color: white;
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; transition: all var(--transition);
+}
+.modal-close:hover { background: rgba(255,255,255,0.35); }
+.modal-body { padding: 28px; }
+.modal-doc {
+  background: #fafafa; border: 1px solid var(--gray-200);
+  border-radius: var(--radius); padding: 28px;
+  font-family: 'Courier New', monospace; font-size: 0.82rem;
+  line-height: 1.85; color: var(--gray-700);
+}
+.modal-doc .mh { text-align: center; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 2px solid var(--gray-300); }
+.modal-doc .mh .logo { font-size: 2rem; }
+.modal-doc .mh .org { font-weight: 700; font-size: 0.95rem; color: var(--gray-800); font-family: var(--font-display); }
+.modal-doc .mh .address { font-size: 0.72rem; color: var(--gray-500); }
+.modal-doc .mt { font-weight: 700; text-align: center; text-decoration: underline; font-size: 0.9rem; margin-bottom: 16px; color: var(--gray-800); }
+.modal-doc .mr { font-size: 0.8rem; }
+.modal-doc p { margin-bottom: 12px; font-family: 'Courier New', monospace; font-size: 0.82rem; color: var(--gray-700); }
+.modal-footer { padding: 16px 28px 24px; display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid var(--gray-100); }
+
+/* ============================================================
+   BACK TO TOP
+   ============================================================ */
+#back-to-top {
+  position: fixed; bottom: 28px; right: 28px; z-index: 900;
+  width: 48px; height: 48px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  color: white; border: none; font-size: 1.2rem;
+  box-shadow: 0 4px 16px rgba(13,148,136,0.4);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: all var(--transition);
+}
+#back-to-top.visible { opacity: 1; pointer-events: all; }
+#back-to-top:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(13,148,136,0.5); }
+
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ============================================================
+   HEALTHCARE SCENARIOS
+   ============================================================ */
+#scenarios { background: var(--bg); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .letters-grid, .memo-layout, .email-grid { grid-template-columns: 1fr; }
+  .about-layout { grid-template-columns: 1fr; gap: 40px; }
+  .contact-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .nav-menu-btn { display: block; }
+  .grid-3, .grid-2, .grid-4 { grid-template-columns: 1fr; }
+  .tips-grid { grid-template-columns: repeat(2, 1fr); }
+  .blog-grid { grid-template-columns: repeat(2, 1fr); }
+  .dodonts-grid { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .hero-stats { gap: 24px; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+}
+@media (max-width: 480px) {
+  .tips-grid, .blog-grid { grid-template-columns: 1fr; }
+  .hero-btns { flex-direction: column; align-items: center; }
+  .section { padding: 60px 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     NAVIGATION
+     ============================================================ -->
+<nav id="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#hero" class="nav-brand">
+        <div class="nav-logo">🏥</div>
+        <div class="nav-brand-text">
+          <div class="title">Healthcare Communication Hub</div>
+          <div class="subtitle">Professional Writing Portal</div>
+        </div>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#hero" class="active">Home</a></li>
+        <li><a href="#letters">Formal Letters</a></li>
+        <li><a href="#memos">Memoranda</a></li>
+        <li><a href="#emails">Prof. Emails</a></li>
+        <li><a href="#scenarios">Scenarios</a></li>
+        <li><a href="#tips">Writing Tips</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <button class="nav-menu-btn" id="menuBtn" aria-label="Toggle menu">☰</button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#hero">🏠 Home</a>
+      <a href="#letters">📝 Formal Letters</a>
+      <a href="#memos">📋 Memoranda</a>
+      <a href="#emails">📧 Professional Emails</a>
+      <a href="#scenarios">🏥 Healthcare Scenarios</a>
+      <a href="#tips">💡 Writing Tips</a>
+      <a href="#contact">📞 Contact</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section id="hero">
+  <div class="hero-pattern"></div>
+  <div class="hero-circles">
+    <div class="hero-circle hc1"></div>
+    <div class="hero-circle hc2"></div>
+    <div class="hero-circle hc3"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">🏥 Official Healthcare Communication Portal</div>
+    <h1>Professional Healthcare<br>Communication</h1>
+    <p>Your comprehensive learning platform for mastering formal letters, memoranda, and professional emails in hospital, clinic, and healthcare settings.</p>
+    <div class="hero-btns">
+      <a href="#letters" class="btn btn-primary">📚 Explore Writing Guides</a>
+      <button onclick="openModal('referral')" class="btn btn-outline">📄 View Sample Documents</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><strong>6+</strong><span>Document Types</span></div>
+      <div class="hero-stat"><strong>20+</strong><span>Sample Templates</span></div>
+      <div class="hero-stat"><strong>5</strong><span>Healthcare Scenarios</span></div>
+      <div class="hero-stat"><strong>100%</strong><span>Free Resource</span></div>
+    </div>
+  </div>
+  <div class="scroll-indicator">Scroll to explore</div>
+</section>
+
+<!-- ============================================================
+     ABOUT
+     ============================================================ -->
+<section id="about" class="section section-alt">
+  <div class="container">
+    <div class="about-layout">
+      <div class="about-text reveal">
+        <div class="section-label">
+          <span class="badge">About This Platform</span>
+        </div>
+        <h2>Simulating Real Hospital Communication Standards</h2>
+        <div class="divider"></div>
+        <p style="margin-bottom:16px;">The Healthcare Communication Hub serves as an official simulation of the communication portal used by hospitals, rural health units, clinics, and healthcare organizations across the Philippines and beyond.</p>
+        <p style="margin-bottom:20px;">This platform is designed for nursing students, healthcare workers, medical professionals, and administrative staff who need to learn and apply workplace communication standards in healthcare settings.</p>
+        <ul class="about-features">
+          <li>Learn proper formats for formal letters used in healthcare institutions</li>
+          <li>Understand the structure and tone of internal hospital memoranda</li>
+          <li>Master professional email etiquette for clinical and administrative contexts</li>
+          <li>Practice with real-world scenarios from hospitals, RHUs, and clinics</li>
+          <li>Access sample documents formatted to professional standards</li>
+          <li>Improve communication accuracy, clarity, and professionalism</li>
+        </ul>
+        <div style="margin-top:24px;">
+          <a href="#letters" class="btn btn-ghost">Get Started →</a>
+        </div>
+      </div>
+      <div class="about-visual reveal">
+        <div class="about-main-card">
+          <div style="font-size:2.5rem;margin-bottom:12px;">🏥</div>
+          <h3>Healthcare Communication Hub</h3>
+          <p>Official simulated communication portal for healthcare education and professional development.</p>
+          <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
+            <span style="background:rgba(255,255,255,0.15);color:white;padding:6px 14px;border-radius:100px;font-size:0.78rem;font-weight:600;">📍 Philippines</span>
+            <span style="background:rgba(255,255,255,0.15);color:white;padding:6px 14px;border-radius:100px;font-size:0.78rem;font-weight:600;">🎓 Educational</span>
+            <span style="background:rgba(255,255,255,0.15);color:white;padding:6px 14px;border-radius:100px;font-size:0.78rem;font-weight:600;">✅ Free Access</span>
+          </div>
+        </div>
+        <div class="about-float-cards">
+          <div class="about-float">
+            <div class="about-float-icon">📝</div>
+            <div><strong>Formal Writing Standards</strong><span>Letters, memos & emails</span></div>
+          </div>
+          <div class="about-float">
+            <div class="about-float-icon">👩‍⚕️</div>
+            <div><strong>For Healthcare Professionals</strong><span>Nurses, doctors, admin staff</span></div>
+          </div>
+          <div class="about-float">
+            <div class="about-float-icon">🎓</div>
+            <div><strong>Student-Friendly</strong><span>Nursing & health science students</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FORMAL LETTERS
+     ============================================================ -->
+<section id="letters" class="section">
+  <div class="container">
+    <div class="section-label reveal">
+      <span class="badge">Section A</span>
+    </div>
+    <h2 class="reveal">📝 Formal Letters in Healthcare</h2>
+    <div class="divider"></div>
+    <p class="reveal" style="max-width:600px;margin-bottom:40px;">Formal letters are essential communication tools in hospitals and healthcare institutions. They convey official requests, referrals, endorsements, and responses with proper authority and professionalism.</p>
+
+    <div class="letters-grid">
+      <!-- Left: Guide Cards -->
+      <div class="guide-cards reveal">
+        <div class="guide-card" data-guide>
+          <div class="guide-header" onclick="toggleGuide(this)">
+            <div class="guide-header-left">
+              <span class="guide-emoji">📨</span>
+              <div>
+                <div class="guide-title">Referral Letter</div>
+                <div class="guide-subtitle">Refer patients to specialists or facilities</div>
+              </div>
+            </div>
+            <span class="guide-chevron">▼</span>
+          </div>
+          <div class="guide-body">
+            <p>A referral letter formally transfers a patient's care to another healthcare provider or facility. It must include patient details, diagnosis, reason for referral, and relevant medical history.</p>
+            <ul>
+              <li>Use official hospital letterhead</li>
+              <li>Include patient's full name, age, and diagnosis</li>
+              <li>State the purpose of referral clearly</li>
+              <li>Include attending physician's signature</li>
+            </ul>
+            <button class="btn btn-ghost btn-sm" onclick="openModal('referral')">👁 View Sample</button>
+          </div>
+        </div>
+
+        <div class="guide-card" data-guide>
+          <div class="guide-header" onclick="toggleGuide(this)">
+            <div class="guide-header-left">
+              <span class="guide-emoji">📩</span>
+              <div>
+                <div class="guide-title">Request Letter</div>
+                <div class="guide-subtitle">Request supplies, equipment, or services</div>
+              </div>
+            </div>
+            <span class="guide-chevron">▼</span>
+          </div>
+          <div class="guide-body">
+            <p>Request letters are used to formally ask for resources, services, schedules, or assistance from another department or external entity.</p>
+            <ul>
+              <li>Be specific about what is being requested</li>
+              <li>Justify the reason for the request</li>
+              <li>Indicate urgency if applicable</li>
+              <li>Provide contact information for follow-up</li>
+            </ul>
+            <button class="btn btn-ghost btn-sm" onclick="openModal('request')">👁 View Sample</button>
+          </div>
+        </div>
+
+        <div class="guide-card" data-guide>
+          <div class="guide-header" onclick="toggleGuide(this)">
+            <div class="guide-header-left">
+              <span class="guide-emoji">📜</span>
+              <div>
+                <div class="guide-title">Endorsement Letter</div>
+                <div class="guide-subtitle">Endorse staff, services, or procedures</div>
+              </div>
+            </div>
+            <span class="guide-chevron">▼</span>
+          </div>
+          <div class="guide-body">
+            <p>Endorsement letters officially support a person, policy, product, or procedure. They are signed by an authority figure and carry official weight.</p>
+            <ul>
+              <li>State clearly what or who is being endorsed</li>
+              <li>Provide supporting reasons and qualifications</li>
+              <li>Use authoritative, professional language</li>
+              <li>Include signatory's position and credentials</li>
+            </ul>
+            <button class="btn btn-ghost btn-sm" onclick="openModal('endorsement')">👁 View Sample</button>
+          </div>
+        </div>
+
+        <div class="guide-card" data-guide>
+          <div class="guide-header" onclick="toggleGuide(this)">
+            <div class="guide-header-left">
+              <span class="guide-emoji">💬</span>
+              <div>
+                <div class="guide-title">Patient Concern Response</div>
+                <div class="guide-subtitle">Address complaints and patient feedback</div>
+              </div>
+            </div>
+            <span class="guide-chevron">▼</span>
+          </div>
+          <div class="guide-body">
+            <p>This type of letter responds to formal complaints or concerns raised by patients or their families, maintaining empathy while upholding institutional standards.</p>
+            <ul>
+              <li>Acknowledge the concern respectfully</li>
+              <li>Avoid defensive or dismissive language</li>
+              <li>State actions taken to address the issue</li>
+              <li>Express commitment to quality care</li>
+            </ul>
+            <button class="btn btn-ghost btn-sm" onclick="openModal('concern')">👁 View Sample</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Live Preview + Tips -->
+      <div class="letter-preview reveal">
+        <div class="letter-preview-header">
+          <div>
+            <h3>📄 Letter Structure Preview</h3>
+            <div style="font-size:0.78rem;color:rgba(255,255,255,0.7);">Interactive document viewer</div>
+          </div>
+          <span class="badge" style="background:rgba(255,255,255,0.2);color:white;">Live</span>
+        </div>
+        <div class="letter-tabs">
+          <button class="letter-tab active" onclick="switchTab(this, 'format')">Format</button>
+          <button class="letter-tab" onclick="switchTab(this, 'referral-prev')">Referral</button>
+          <button class="letter-tab" onclick="switchTab(this, 'request-prev')">Request</button>
+        </div>
+        <div class="letter-body">
+          <div class="doc-paper active" id="format">
+            <div class="doc-header">
+              <div class="doc-logo">🏥</div>
+              <div class="doc-org">HOSPITAL / CLINIC LETTERHEAD</div>
+              <div class="doc-sub">Address · Phone · Email · Website</div>
+            </div>
+            <div><strong>[Date]</strong></div>
+            <div style="margin:8px 0 4px;"><strong>[Recipient Name, Position]</strong></div>
+            <div>[Department / Organization]</div>
+            <div style="margin:12px 0 4px;">&nbsp;</div>
+            <div><strong>RE: [Subject of the Letter]</strong></div>
+            <div style="margin:10px 0;">&nbsp;</div>
+            <div>Dear [Salutation] [Name],</div>
+            <div style="margin:10px 0;">Opening paragraph — state purpose clearly and directly.</div>
+            <div style="margin:10px 0;">Body paragraph(s) — provide details, justifications, and supporting information.</div>
+            <div style="margin:10px 0;">Closing paragraph — restate request or next step; express willingness to provide further information.</div>
+            <div style="margin:12px 0 4px;">Sincerely,</div>
+            <div style="margin-top:30px;border-top:1px solid #666;width:180px;">&nbsp;</div>
+            <div><strong>[Full Name, RN / MD]</strong></div>
+            <div style="font-size:0.75rem;color:#888;">[Position], [Department]</div>
+          </div>
+          <div class="doc-paper" id="referral-prev">
+            <div class="doc-header">
+              <div class="doc-logo">🏥</div>
+              <div class="doc-org">BICOL REGIONAL HOSPITAL</div>
+              <div class="doc-sub">Legaspi City, Albay · Tel. (052) 214-5555</div>
+            </div>
+            <div class="doc-title">PATIENT REFERRAL LETTER</div>
+            <div>Date: March 15, 2025</div>
+            <div style="margin:8px 0;">To: The Attending Physician<br>Department of Pulmonology<br>Philippine Heart Center, Quezon City</div>
+            <div style="margin:10px 0;">Dear Colleague,</div>
+            <div style="margin:8px 0;">We are referring Mr. Juan dela Cruz, 58 years old, male, for further evaluation and management of persistent dyspnea and hemoptysis not resolving with standard antibiotic therapy.</div>
+            <div style="margin:8px 0;">Diagnosis: Suspected pulmonary tuberculosis with complications. Please see attached medical records.</div>
+            <div style="margin:12px 0 4px;">Respectfully,</div>
+            <div style="margin-top:24px;border-top:1px solid #666;width:160px;">&nbsp;</div>
+            <div><strong>Dr. Maria Santos, MD</strong></div>
+            <div style="font-size:0.75rem;color:#888;">Chief of Clinics, Internal Medicine</div>
+          </div>
+          <div class="doc-paper" id="request-prev">
+            <div class="doc-header">
+              <div class="doc-logo">🏥</div>
+              <div class="doc-org">NAGA CITY HEALTH OFFICE</div>
+              <div class="doc-sub">City Hall Compound, Naga City · (054) 871-0000</div>
+            </div>
+            <div class="doc-title">LETTER OF REQUEST</div>
+            <div>Date: April 3, 2025</div>
+            <div style="margin:8px 0;">To: The Medical Supplies Manager<br>Department of Health - Region V<br>Legazpi City, Albay</div>
+            <div style="margin:10px 0;">Dear Sir/Madam,</div>
+            <div style="margin:8px 0;">This office respectfully requests the immediate replenishment of essential medicines — specifically Amoxicillin 500mg (500 tablets), Paracetamol 500mg (1000 tablets), and ORS sachets (200 packs) — for Barangay Health Centers in Naga City experiencing critical stock shortage.</div>
+            <div style="margin:12px 0 4px;">Very respectfully,</div>
+            <div style="margin-top:24px;border-top:1px solid #666;width:160px;">&nbsp;</div>
+            <div><strong>Dr. Ligaya Reyes, MD, MPH</strong></div>
+            <div style="font-size:0.75rem;color:#888;">City Health Officer</div>
+          </div>
+        </div>
+        <div class="tips-panel">
+          <h4>💡 Quick Writing Tips</h4>
+          <ul>
+            <li>Always use official letterhead with complete institutional information</li>
+            <li>Keep language formal, concise, and free of medical jargon when writing to non-clinicians</li>
+            <li>Double-check spelling of patient names, diagnoses, and medication names</li>
+            <li>Include your full name, credentials, and designation in the signature block</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Do's and Don'ts -->
+    <div style="margin-top:40px;" class="reveal">
+      <h3 style="margin-bottom:20px;">✅ Common Mistakes to Avoid</h3>
+      <div class="dodonts-grid">
+        <div class="do-card">
+          <div class="dd-title do-title">✅ Best Practices</div>
+          <ul class="dd-list do-list">
+            <li>Use complete, professional salutations (Dear Dr. Santos)</li>
+            <li>State your purpose in the first paragraph</li>
+            <li>Maintain a courteous and respectful tone throughout</li>
+            <li>Include all necessary contact details for follow-up</li>
+            <li>Sign with full name, credentials, and designation</li>
+            <li>Proofread for spelling, grammar, and factual accuracy</li>
+          </ul>
+        </div>
+        <div class="dont-card">
+          <div class="dd-title dont-title">❌ Common Errors</div>
+          <ul class="dd-list dont-list">
+            <li>Using casual greetings like "Hi" or "Hey" in formal letters</li>
+            <li>Leaving out the date or recipient's address</li>
+            <li>Using vague language that obscures the request</li>
+            <li>Writing in ALL CAPS for emphasis — use bold instead</li>
+            <li>Forgetting to attach referenced documents</li>
+            <li>Using personal email accounts for official correspondence</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     MEMORANDA
+     ============================================================ -->
+<section id="memos" class="section section-alt">
+  <div class="container">
+    <div class="section-label reveal">
+      <span class="badge badge-blue">Section B</span>
+    </div>
+    <h2 class="reveal">📋 Hospital Memoranda</h2>
+    <div class="divider"></div>
+    <p class="reveal" style="max-width:640px;margin-bottom:40px;">Memoranda (memos) are the backbone of internal hospital communication. They are used for staff notices, policy updates, schedule reminders, and official advisories within the organization.</p>
+
+    <div class="memo-layout">
+      <!-- Memo Preview -->
+      <div class="memo-paper reveal" id="memoPaper">
+        <div class="memo-top">
+          <div class="memo-org">
+            <div class="name">🏥 BICOL MEDICAL CENTER</div>
+            <div class="dept">Nursing Service Division · Internal Communication</div>
+          </div>
+          <div class="memo-heading">MEMORANDUM</div>
+          <div class="memo-fields" id="memoFields">
+            <div class="memo-field"><span class="memo-label">TO:</span><span class="memo-value">All Nursing Staff, Ward 3 &amp; 4</span></div>
+            <div class="memo-field"><span class="memo-label">FROM:</span><span class="memo-value">Maria B. Reyes, RN, MAN — Chief Nurse</span></div>
+            <div class="memo-field"><span class="memo-label">DATE:</span><span class="memo-value">May 5, 2025</span></div>
+            <div class="memo-field"><span class="memo-label">SUBJECT:</span><span class="memo-value">MANDATORY STAFF MEETING — Hand Hygiene Compliance Audit</span></div>
+          </div>
+        </div>
+        <div class="memo-body" id="memoBody">
+          <p>This is to inform all nursing personnel in Wards 3 and 4 that a mandatory staff meeting will be held on <strong>May 10, 2025, at 2:00 PM</strong> in the Nursing Conference Room, 2nd Floor.</p>
+          <p>The agenda includes: (1) review of the recent hand hygiene compliance audit results, (2) identification of areas for improvement, and (3) refresher on standard infection prevention protocols per DOH guidelines.</p>
+          <p>Attendance is strictly required. Staff on duty shall coordinate with the ward supervisor for relief coverage. Please bring your nursing notes and last month's incident reports.</p>
+          <p style="margin-top:16px;"><strong>Non-attendance without valid excuse will be noted in the personnel file.</strong></p>
+          <div style="margin-top:24px;">
+            <div style="border-top:1px solid #666;width:200px;margin-bottom:4px;">&nbsp;</div>
+            <strong>MARIA B. REYES, RN, MAN</strong><br>
+            <span style="font-size:0.75rem;color:#888;">Chief Nurse, Bicol Medical Center</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Memo Examples Selector -->
+      <div class="memo-examples reveal">
+        <h3 style="margin-bottom:16px;">Select a Memo Type</h3>
+        <div class="memo-ex-card selected" onclick="switchMemo(this, 'meeting')">
+          <div class="memo-ex-icon">👥</div>
+          <div><div class="memo-ex-title">Staff Meeting Memo</div><div class="memo-ex-desc">Notify staff of upcoming meetings</div></div>
+        </div>
+        <div class="memo-ex-card" onclick="switchMemo(this, 'policy')">
+          <div class="memo-ex-icon">📋</div>
+          <div><div class="memo-ex-title">Policy Update Memo</div><div class="memo-ex-desc">Announce new or revised policies</div></div>
+        </div>
+        <div class="memo-ex-card" onclick="switchMemo(this, 'schedule')">
+          <div class="memo-ex-icon">🗓️</div>
+          <div><div class="memo-ex-title">Duty Schedule Reminder</div><div class="memo-ex-desc">Remind staff of shift assignments</div></div>
+        </div>
+        <div class="memo-ex-card" onclick="switchMemo(this, 'infection')">
+          <div class="memo-ex-icon">🦠</div>
+          <div><div class="memo-ex-title">Infection Control Advisory</div><div class="memo-ex-desc">Alert staff to infection prevention measures</div></div>
+        </div>
+        <div style="margin-top:20px;">
+          <h4 style="margin-bottom:12px;font-size:0.95rem;">Key Elements of a Hospital Memo</h4>
+          <div style="background:var(--blue-soft);border-radius:var(--radius);padding:16px;">
+            <div style="font-size:0.85rem;color:var(--blue-dark);line-height:2;">
+              📌 <strong>TO:</strong> Recipient(s) clearly identified<br>
+              📌 <strong>FROM:</strong> Sender's name and position<br>
+              📌 <strong>DATE:</strong> Date of issuance<br>
+              📌 <strong>SUBJECT:</strong> Concise, all-caps topic<br>
+              📌 <strong>BODY:</strong> Clear, organized paragraphs<br>
+              📌 <strong>SIGNATURE:</strong> With name and designation<br>
+              📌 <strong>DISTRIBUTION:</strong> Cc list if applicable
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PROFESSIONAL EMAILS
+     ============================================================ -->
+<section id="emails" class="section">
+  <div class="container">
+    <div class="section-label reveal">
+      <span class="badge badge-green">Section C</span>
+    </div>
+    <h2 class="reveal">📧 Professional Emails in Healthcare</h2>
+    <div class="divider"></div>
+    <p class="reveal" style="max-width:640px;margin-bottom:40px;">Professional emails are the fastest form of official written communication in modern healthcare settings. Proper email etiquette protects patient confidentiality and maintains institutional credibility.</p>
+
+    <div class="email-grid">
+      <!-- Email Client Mock -->
+      <div class="reveal">
+        <div class="email-client">
+          <div class="email-client-bar">
+            <div class="email-dot ed-r"></div>
+            <div class="email-dot ed-y"></div>
+            <div class="email-dot ed-g"></div>
+            <span style="margin-left:10px;opacity:0.8;">New Message — Official Healthcare Email</span>
+          </div>
+          <div class="email-compose">
+            <div class="email-field">
+              <span class="ef-label">FROM:</span>
+              <span class="ef-value">nursing@bicolmedicalcenter.ph</span>
+            </div>
+            <div class="email-field">
+              <span class="ef-label">TO:</span>
+              <span class="ef-value">ward4supervisor@bicolmedicalcenter.ph</span>
+            </div>
+            <div class="email-field">
+              <span class="ef-label">SUBJECT:</span>
+              <span class="ef-value" style="font-weight:600;color:var(--gray-800);">Shift Endorsement — Night Duty to Morning Duty, May 15, 2025</span>
+            </div>
+            <div class="email-field">
+              <span class="ef-label">CC:</span>
+              <span class="ef-value">chiefrn@bicolmedicalcenter.ph</span>
+            </div>
+            <div class="email-body-content">
+              <p style="margin-bottom:10px;">Good morning, Ma'am/Sir,</p>
+              <p style="margin-bottom:10px;">I am submitting the endorsement report for the night shift (10:00 PM – 6:00 AM) in Ward 4 for your reference.</p>
+              <p style="margin-bottom:10px;"><strong>Total patients: 18 (3 new admissions, 2 discharges)</strong></p>
+              <p style="margin-bottom:10px;">Critical patients: (1) Patient in Bed 4-B with worsening dyspnea — O2 therapy at 4L/min ongoing, attending physician notified. IV line in Bed 4-F replaced at 3:00 AM. All medications administered as ordered.</p>
+              <p style="margin-bottom:10px;">Please ensure follow-up on pending blood results for Beds 4-A and 4-C.</p>
+              <p style="margin-bottom:10px;">Respectfully,<br><strong>RN Ana Mariz Villanueva</strong><br>Ward 4 Night Duty Nurse</p>
+              <p style="font-size:0.75rem;color:var(--gray-400);margin-top:16px;border-top:1px solid var(--gray-100);padding-top:12px;">CONFIDENTIALITY NOTICE: This email may contain privileged and confidential patient information intended solely for the named recipient(s).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email Rules -->
+      <div class="email-rules reveal">
+        <h3 style="margin-bottom:16px;">📖 Email Etiquette Rules</h3>
+        <div class="email-rule-card">
+          <div class="email-rule-icon">📌</div>
+          <div>
+            <div class="email-rule-title">Clear Subject Lines</div>
+            <div class="email-rule-desc">Always state the topic, ward, and date. Example: "Shift Endorsement – Ward 4 – May 15, 2025"</div>
+          </div>
+        </div>
+        <div class="email-rule-card">
+          <div class="email-rule-icon">🤝</div>
+          <div>
+            <div class="email-rule-title">Professional Greetings</div>
+            <div class="email-rule-desc">Use "Good morning/afternoon" or "Dear Dr./Ma'am/Sir" — never "Hey" or "Yo"</div>
+          </div>
+        </div>
+        <div class="email-rule-card">
+          <div class="email-rule-icon">🔒</div>
+          <div>
+            <div class="email-rule-title">Confidentiality Reminder</div>
+            <div class="email-rule-desc">Include a confidentiality notice at the bottom for emails containing patient information</div>
+          </div>
+        </div>
+        <div class="email-rule-card">
+          <div class="email-rule-icon">✅</div>
+          <div>
+            <div class="email-rule-title">Professional Closing</div>
+            <div class="email-rule-desc">End with "Respectfully," "Sincerely," or "Best regards," followed by full name and designation</div>
+          </div>
+        </div>
+        <div class="email-rule-card">
+          <div class="email-rule-icon">📎</div>
+          <div>
+            <div class="email-rule-title">Attachments</div>
+            <div class="email-rule-desc">Mention all attachments in the body. Use descriptive filenames like "MedRec_JuanDelaCruz_05152025.pdf"</div>
+          </div>
+        </div>
+        <div class="email-rule-card" style="border-color:var(--blue);">
+          <div class="email-rule-icon">⚡</div>
+          <div>
+            <div class="email-rule-title">Reply Promptly</div>
+            <div class="email-rule-desc">Healthcare emails require timely responses. Acknowledge receipt within 24 hours even if full reply takes longer</div>
+          </div>
+        </div>
+        <div style="margin-top:16px;">
+          <button class="btn btn-ghost" onclick="openModal('email')">📧 View Email Samples</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCENARIOS
+     ============================================================ -->
+<section id="scenarios" class="section section-alt">
+  <div class="container">
+    <div class="section-label reveal">
+      <span class="badge">Real-World Practice</span>
+    </div>
+    <h2 class="reveal">🏥 Healthcare Communication Scenarios</h2>
+    <div class="divider"></div>
+    <p class="reveal" style="max-width:640px;margin-bottom:40px;">Practice with realistic situations from actual healthcare settings. Each scenario tells you what document to use and how to approach it.</p>
+
+    <div class="grid-3 reveal">
+      <!-- Scenario 1 -->
+      <div class="scenario-card">
+        <div class="scenario-top">
+          <div class="scenario-icon">🔄</div>
+          <div class="scenario-type">Nursing</div>
+          <div class="scenario-title">Shift Endorsement to Incoming Nurse</div>
+        </div>
+        <div class="scenario-body">
+          <p>Night duty nurse Ana needs to formally endorse 18 patients to the morning shift. Patient in Bed 4-B requires urgent monitoring.</p>
+          <div class="scenario-tags">
+            <span class="scenario-tag">📧 Professional Email</span>
+            <span class="scenario-tag">🏥 Ward Communication</span>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('endorsement-email')">📄 View Sample</button>
+        </div>
+      </div>
+
+      <!-- Scenario 2 -->
+      <div class="scenario-card">
+        <div class="scenario-top">
+          <div class="scenario-icon">💊</div>
+          <div class="scenario-type">Clinic / RHU</div>
+          <div class="scenario-title">Requesting Medical Supplies from DOH</div>
+        </div>
+        <div class="scenario-body">
+          <p>Naga City Health Office has critical shortage of essential medicines. The City Health Officer must formally request replenishment.</p>
+          <div class="scenario-tags">
+            <span class="scenario-tag">📝 Request Letter</span>
+            <span class="scenario-tag">🏛️ Government</span>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('request')">📄 View Sample</button>
+        </div>
+      </div>
+
+      <!-- Scenario 3 -->
+      <div class="scenario-card">
+        <div class="scenario-top">
+          <div class="scenario-icon">📢</div>
+          <div class="scenario-type">Administration</div>
+          <div class="scenario-title">Hospital Policy Update to All Staff</div>
+        </div>
+        <div class="scenario-body">
+          <p>Hospital administration needs to inform all staff of the new No-Phone Policy in patient areas effective immediately.</p>
+          <div class="scenario-tags">
+            <span class="scenario-tag">📋 Memorandum</span>
+            <span class="scenario-tag">🏥 Internal</span>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('policy-memo')">📄 View Sample</button>
+        </div>
+      </div>
+
+      <!-- Scenario 4 -->
+      <div class="scenario-card">
+        <div class="scenario-top">
+          <div class="scenario-icon">💉</div>
+          <div class="scenario-type">Public Health</div>
+          <div class="scenario-title">Scheduling a Vaccination Drive</div>
+        </div>
+        <div class="scenario-body">
+          <p>The Rural Health Unit needs to coordinate a barangay-wide vaccination drive. Barangay captains and health workers must be notified.</p>
+          <div class="scenario-tags">
+            <span class="scenario-tag">📋 Memorandum</span>
+            <span class="scenario-tag">📧 Email Invite</span>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('vaccination')">📄 View Sample</button>
+        </div>
+      </div>
+
+      <!-- Scenario 5 -->
+      <div class="scenario-card">
+        <div class="scenario-top">
+          <div class="scenario-icon">🔬</div>
+          <div class="scenario-type">Clinical</div>
+          <div class="scenario-title">Doctor Requesting Lab Results</div>
+        </div>
+        <div class="scenario-body">
+          <p>Dr. Bautista needs urgent CBC and blood culture results for a patient showing signs of sepsis. The laboratory must be formally notified.</p>
+          <div class="scenario-tags">
+            <span class="scenario-tag">📧 Urgent Email</span>
+            <span class="scenario-tag">🏥 Clinical</span>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('lab-request')">📄 View Sample</button>
+        </div>
+      </div>
+
+      <!-- Scenario 6 -->
+      <div class="scenario-card">
+        <div class="scenario-top">
+          <div class="scenario-icon">🤝</div>
+          <div class="scenario-type">Patient Relations</div>
+          <div class="scenario-title">Responding to Patient Complaint</div>
+        </div>
+        <div class="scenario-body">
+          <p>A patient's family filed a formal complaint about long waiting times in the ER. The hospital quality team must respond officially.</p>
+          <div class="scenario-tags">
+            <span class="scenario-tag">📝 Response Letter</span>
+            <span class="scenario-tag">💬 Patient Relations</span>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="openModal('concern')">📄 View Sample</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     WRITING TIPS
+     ============================================================ -->
+<section id="tips" class="section">
+  <div class="container">
+    <div class="section-label reveal">
+      <span class="badge">Best Practices</span>
+    </div>
+    <h2 class="reveal">💡 Writing Tips for Healthcare Professionals</h2>
+    <div class="divider"></div>
+    <p class="reveal" style="max-width:640px;margin-bottom:40px;">Apply these essential writing principles to every formal communication you produce in a healthcare setting.</p>
+    <div class="tips-grid reveal">
+      <div class="tip-card">
+        <div class="tip-icon">✂️</div>
+        <div class="tip-title">Be Concise</div>
+        <div class="tip-desc">Say exactly what needs to be said — no more. Avoid verbose phrases like "in order to" (use "to") or "at this point in time" (use "now").</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🎩</div>
+        <div class="tip-title">Maintain Professionalism</div>
+        <div class="tip-desc">Use formal language at all times. Avoid casual speech, jokes, sarcasm, and emotional language in official communications.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🚫</div>
+        <div class="tip-title">Avoid Slang & Jargon</div>
+        <div class="tip-desc">Write for clarity. Avoid medical shorthand, abbreviations (unless standard), and slang that may confuse or offend recipients.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🔒</div>
+        <div class="tip-title">Observe Confidentiality</div>
+        <div class="tip-desc">Never include sensitive patient information in unsecured emails. Follow RA 10173 (Data Privacy Act) and your institution's privacy protocols.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">📐</div>
+        <div class="tip-title">Use Proper Formatting</div>
+        <div class="tip-desc">Consistent font, proper margins, correct salutations, and a structured layout show professionalism and respect for the reader.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🔍</div>
+        <div class="tip-title">Proofread Always</div>
+        <div class="tip-desc">Read your document at least twice before sending. Check spelling, grammar, accuracy of facts (names, dates, drug dosages), and formatting.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🎯</div>
+        <div class="tip-title">State Purpose Early</div>
+        <div class="tip-desc">The first paragraph must clearly state why you are writing. Readers in healthcare settings are busy — get to the point immediately.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">📅</div>
+        <div class="tip-title">Include All Key Details</div>
+        <div class="tip-desc">Always include dates, times, names (spelled correctly), reference numbers, and contact information so the reader can act without guessing.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🤲</div>
+        <div class="tip-title">Use Respectful Language</div>
+        <div class="tip-desc">Acknowledge the recipient's authority and expertise. Phrases like "We respectfully request" and "Kindly advise" show courtesy and cooperation.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     BLOG / SEARCH
+     ============================================================ -->
+<section id="blog" class="section section-alt">
+  <div class="container">
+    <div class="section-label reveal">
+      <span class="badge badge-blue">Learning Library</span>
+    </div>
+    <h2 class="reveal">📚 Browse Learning Topics</h2>
+    <div class="divider"></div>
+    <div class="search-bar reveal">
+      <div class="search-input-wrap">
+        <input class="search-input" id="searchInput" type="text" placeholder="Search topics (e.g. memo, nursing, email, referral...)">
+      </div>
+      <div class="filter-btns">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="letters">Letters</button>
+        <button class="filter-btn" data-filter="memo">Memo</button>
+        <button class="filter-btn" data-filter="email">Email</button>
+        <button class="filter-btn" data-filter="nursing">Nursing</button>
+      </div>
+    </div>
+    <div class="blog-grid" id="blogGrid">
+      <div class="blog-card" data-tags="letters formal referral nursing patient">
+        <div class="blog-img bg-teal">📨</div>
+        <div class="blog-content">
+          <div class="blog-cat">Formal Letters</div>
+          <div class="blog-title">How to Write a Patient Referral Letter</div>
+          <div class="blog-excerpt">Step-by-step guide to writing accurate and complete referral letters for inter-hospital transfers.</div>
+          <div class="blog-meta"><span>📝 Letters</span><span>5 min read</span></div>
+        </div>
+      </div>
+      <div class="blog-card" data-tags="memo hospital internal policy staff">
+        <div class="blog-img bg-blue">📋</div>
+        <div class="blog-content">
+          <div class="blog-cat">Memoranda</div>
+          <div class="blog-title">Writing Effective Hospital Memoranda</div>
+          <div class="blog-excerpt">Learn the standard format and tone for internal memos used in hospital departments and wards.</div>
+          <div class="blog-meta"><span>📋 Memo</span><span>4 min read</span></div>
+        </div>
+      </div>
+      <div class="blog-card" data-tags="email nursing communication shift endorsement">
+        <div class="blog-img bg-green">📧</div>
+        <div class="blog-content">
+          <div class="blog-cat">Professional Email</div>
+          <div class="blog-title">Shift Endorsement Email Best Practices</div>
+          <div class="blog-excerpt">How to write a comprehensive, accurate shift endorsement email that keeps patients safe.</div>
+          <div class="blog-meta"><span>📧 Email</span><span>3 min read</span></div>
+        </div>
+      </div>
+      <div class="blog-card" data-tags="nursing communication patient confidentiality privacy">
+        <div class="blog-img bg-purple">🔒</div>
+        <div class="blog-content">
+          <div class="blog-cat">Nursing</div>
+          <div class="blog-title">Confidentiality in Healthcare Communication</div>
+          <div class="blog-excerpt">Understanding the Data Privacy Act and its implications for nurses and healthcare writers.</div>
+          <div class="blog-meta"><span>👩‍⚕️ Nursing</span><span>6 min read</span></div>
+        </div>
+      </div>
+      <div class="blog-card" data-tags="letters request formal rhu supplies">
+        <div class="blog-img bg-orange">📩</div>
+        <div class="blog-content">
+          <div class="blog-cat">Formal Letters</div>
+          <div class="blog-title">Request Letters for RHUs and Clinics</div>
+          <div class="blog-excerpt">Templates and tips for writing formal request letters to government health offices and DOH.</div>
+          <div class="blog-meta"><span>📝 Letters</span><span>4 min read</span></div>
+        </div>
+      </div>
+      <div class="blog-card" data-tags="memo infection control advisory nursing hospital">
+        <div class="blog-img bg-pink">🦠</div>
+        <div class="blog-content">
+          <div class="blog-cat">Memoranda</div>
+          <div class="blog-title">Infection Control Advisories: A Writing Guide</div>
+          <div class="blog-excerpt">How to write clear, urgent, and actionable infection prevention memos for hospital staff.</div>
+          <div class="blog-meta"><span>📋 Memo</span><span>5 min read</span></div>
+        </div>
+      </div>
+      <div class="blog-card" data-tags="email meeting invitation healthcare admin">
+        <div class="blog-img bg-teal">📅</div>
+        <div class="blog-content">
+          <div class="blog-cat">Professional Email</div>
+          <div class="blog-title">Writing Meeting Invitations in Healthcare</div>
+          <div class="blog-excerpt">Professional format for meeting invitations sent to clinical and administrative staff.</div>
+          <div class="blog-meta"><span>📧 Email</span><span>3 min read</span></div>
+        </div>
+      </div>
+      <div class="blog-card" data-tags="nursing formal letters endorsement staff hospital">
+        <div class="blog-img bg-blue">📜</div>
+        <div class="blog-content">
+          <div class="blog-cat">Nursing</div>
+          <div class="blog-title">Endorsement Letters for Nursing Staff</div>
+          <div class="blog-excerpt">When and how to use endorsement letters when recommending nurses for transfer, promotion, or special assignments.</div>
+          <div class="blog-meta"><span>👩‍⚕️ Nursing</span><span>4 min read</span></div>
+        </div>
+      </div>
+      <div class="blog-card" data-tags="letters patient concern complaint response hospital">
+        <div class="blog-img bg-green">💬</div>
+        <div class="blog-content">
+          <div class="blog-cat">Patient Relations</div>
+          <div class="blog-title">Responding to Patient Complaints: A Guide</div>
+          <div class="blog-excerpt">Write professional, empathetic, and legally sound responses to patient and family concerns.</div>
+          <div class="blog-meta"><span>📝 Letters</span><span>5 min read</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="no-results" id="noResults">😕 No topics found. Try different keywords.</div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CONTACT / FOOTER
+     ============================================================ -->
+<footer id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-brand">
+        <div class="logo-wrap">
+          <div class="logo">🏥</div>
+          <div>
+            <div class="brand-name">Healthcare Communication Hub</div>
+            <div class="brand-sub">Professional Writing Portal</div>
+          </div>
+        </div>
+        <p>An educational simulation of the official communication portal of a healthcare institution. Designed to help students and professionals master workplace writing standards.</p>
+        <div class="social-links">
+          <a class="social-link" href="#" title="Facebook">📘</a>
+          <a class="social-link" href="#" title="Twitter">🐦</a>
+          <a class="social-link" href="#" title="YouTube">▶️</a>
+          <a class="social-link" href="#" title="Email">📧</a>
+        </div>
+      </div>
+      <div class="contact-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#about">About This Platform</a></li>
+          <li><a href="#letters">Formal Letters Guide</a></li>
+          <li><a href="#memos">Memoranda Guide</a></li>
+          <li><a href="#emails">Professional Emails</a></li>
+          <li><a href="#scenarios">Healthcare Scenarios</a></li>
+          <li><a href="#tips">Writing Tips</a></li>
+          <li><a href="#blog">Learning Library</a></li>
+        </ul>
+      </div>
+      <div class="contact-col">
+        <h4>Communication Office</h4>
+        <div class="contact-info-item">
+          <div class="contact-info-icon">🏥</div>
+          <div class="contact-info-text">
+            <strong>Office of the Chief Nurse</strong>
+            Bicol Medical Center (Simulated)<br>Legaspi City, Albay, Philippines
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-info-icon">📧</div>
+          <div class="contact-info-text">
+            <strong>Email</strong>
+            comms@hchub.edu.ph
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-info-icon">📞</div>
+          <div class="contact-info-text">
+            <strong>Phone</strong>
+            (052) 214-5555 loc. 201
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <div class="contact-info-icon">🕐</div>
+          <div class="contact-info-text">
+            <strong>Office Hours</strong>
+            Mon–Fri, 8:00 AM – 5:00 PM
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Healthcare Communication Hub. Educational simulation platform. All rights reserved.</p>
+      <p style="color:rgba(255,255,255,0.3);">Built for nursing & healthcare communication education in the Philippines</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     BACK TO TOP
+     ============================================================ -->
+<button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
+
+<!-- ============================================================
+     MODAL
+     ============================================================ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal" id="modalBox">
+    <div class="modal-header">
+      <div>
+        <h3 id="modalTitle">Sample Document</h3>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.7);" id="modalSubtitle">Healthcare Communication Hub</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-doc" id="modalContent"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨️ Print</button>
+      <button class="btn btn-primary btn-sm" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+
+/* ---- MODAL CONTENT LIBRARY ---- */
+const modalData = {
+  referral: {
+    title: 'Patient Referral Letter',
+    subtitle: 'Formal Letter Template',
+    content: `
+      <div class="mh">
+        <div class="logo">🏥</div>
+        <div class="org">BICOL REGIONAL HOSPITAL</div>
+        <div class="address">San Francisco St., Legazpi City, Albay 4500 · Tel: (052) 214-5555 · Email: bcrh@doh.gov.ph</div>
+      </div>
+      <div style="text-align:right;font-size:0.8rem;margin-bottom:16px;">March 15, 2025</div>
+      <div style="margin-bottom:14px;">
+        <strong>The Attending Physician</strong><br>
+        Department of Pulmonology<br>
+        Philippine Heart Center<br>
+        East Avenue, Diliman, Quezon City
+      </div>
+      <div class="mt">PATIENT REFERRAL LETTER</div>
+      <p>Dear Colleague,</p>
+      <p>We are respectfully referring <strong>Mr. Juan Andres dela Cruz</strong>, 58 years old, male, Filipino, residing at Barangay Tinago, Legazpi City, for further evaluation and specialized management.</p>
+      <p><strong>Chief Complaint:</strong> Persistent productive cough with hemoptysis (3 weeks duration), progressive dyspnea, night sweats, and unintended weight loss of approximately 8 kilograms over two months.</p>
+      <p><strong>Working Diagnosis:</strong> Pulmonary Tuberculosis with suspected complications. Not responding to empiric antibiotic therapy (Amoxicillin-Clavulanate 875/125mg BID for 14 days).</p>
+      <p><strong>Diagnostic Results Attached:</strong> Chest X-Ray (bilateral infiltrates), CBC (leukocytosis), Sputum AFB Smear (Pending), PPD Test (positive, 18mm).</p>
+      <p>We kindly request your expertise for thorough pulmonological assessment, HRCT of the chest, and sputum GeneXpert MTB/RIF assay. All pertinent records, including the patient's consent for referral, are enclosed.</p>
+      <p>Thank you very much for your valuable assistance in the management of this patient.</p>
+      <p style="margin-top:20px;">Respectfully,</p>
+      <div style="margin-top:30px;border-top:1px solid #555;width:220px;padding-top:8px;">
+        <strong>DR. MARIA ELENA SANTOS, MD</strong><br>
+        <span style="font-size:0.75rem;color:#777;">Chief of Clinics, Department of Internal Medicine<br>License No. 0123456 · PRC Reg. Valid until Dec 2026</span>
+      </div>
+    `
+  },
+  request: {
+    title: 'Request Letter for Medical Supplies',
+    subtitle: 'Formal Letter Template',
+    content: `
+      <div class="mh">
+        <div class="logo">🏛️</div>
+        <div class="org">OFFICE OF THE CITY HEALTH OFFICER</div>
+        <div class="address">City Hall Compound, Peñafrancia Ave., Naga City, Camarines Sur · Tel: (054) 871-0000</div>
+      </div>
+      <div style="text-align:right;font-size:0.8rem;margin-bottom:16px;">April 3, 2025</div>
+      <div style="margin-bottom:14px;">
+        <strong>The Regional Director</strong><br>
+        Department of Health — Region V<br>
+        Legazpi City, Albay
+      </div>
+      <div class="mt">LETTER OF REQUEST — EMERGENCY MEDICINE REPLENISHMENT</div>
+      <p>Dear Sir/Madam,</p>
+      <p>This office respectfully and urgently requests the immediate replenishment of essential medicines for the Barangay Health Centers (BHCs) of Naga City. The following items are at critically low stock levels due to increased patient consultations during the current respiratory illness surge:</p>
+      <p>
+        &nbsp;&nbsp;1. Amoxicillin 500mg Capsules — 500 pieces<br>
+        &nbsp;&nbsp;2. Paracetamol 500mg Tablets — 1,000 pieces<br>
+        &nbsp;&nbsp;3. Oral Rehydration Salt (ORS) Sachets — 200 packs<br>
+        &nbsp;&nbsp;4. Salbutamol 2mg Tablets — 300 pieces<br>
+        &nbsp;&nbsp;5. Cotrimoxazole 480mg Tablets — 200 pieces
+      </p>
+      <p>As of April 1, 2025, all 18 BHCs in Naga City have less than 3-day supply of the above medicines. This shortage directly impacts our ability to provide basic health services to an estimated 60,000 daily patients.</p>
+      <p>We humbly request expedited processing of this request. Supporting documents, including inventory reports and patient census, are attached for your reference.</p>
+      <p style="margin-top:20px;">Very respectfully,</p>
+      <div style="margin-top:30px;border-top:1px solid #555;width:220px;padding-top:8px;">
+        <strong>DR. LIGAYA M. REYES, MD, MPH</strong><br>
+        <span style="font-size:0.75rem;color:#777;">City Health Officer, Naga City</span>
+      </div>
+    `
+  },
+  endorsement: {
+    title: 'Endorsement Letter',
+    subtitle: 'Staff Endorsement Template',
+    content: `
+      <div class="mh">
+        <div class="logo">🏥</div>
+        <div class="org">BICOL MEDICAL CENTER</div>
+        <div class="address">Concepcion Pequeña, Naga City, Camarines Sur · Tel: (054) 475-0001</div>
+      </div>
+      <div style="text-align:right;font-size:0.8rem;margin-bottom:16px;">May 1, 2025</div>
+      <div style="margin-bottom:14px;">
+        <strong>The Chief Nurse</strong><br>
+        Philippine General Hospital<br>
+        Taft Avenue, Manila
+      </div>
+      <div class="mt">LETTER OF ENDORSEMENT</div>
+      <p>Dear Chief Nurse,</p>
+      <p>It is with great honor and full confidence that I endorse <strong>MS. ANNA MARIE VILLANUEVA, RN, MAN</strong> for the position of Senior Staff Nurse in your institution's Intensive Care Unit.</p>
+      <p>Ms. Villanueva has been a dedicated and exemplary nurse at Bicol Medical Center for seven (7) years, serving primarily in the Surgical Ward and Medical ICU. During her tenure, she demonstrated outstanding clinical competence, leadership, and commitment to evidence-based practice.</p>
+      <p>Her key qualifications include: Advanced Cardiovascular Life Support (ACLS) certification, Critical Care Nursing Course (CCNC) graduate, ICU charge nurse experience (2 years), and consistently outstanding performance ratings.</p>
+      <p>I am fully confident that Ms. Villanueva will be an exceptional addition to your team and will uphold the highest standards of nursing practice. I strongly recommend her without reservation.</p>
+      <p style="margin-top:20px;">Respectfully,</p>
+      <div style="margin-top:30px;border-top:1px solid #555;width:220px;padding-top:8px;">
+        <strong>MS. ROSARIO C. BAUTISTA, RN, MAN, PhD</strong><br>
+        <span style="font-size:0.75rem;color:#777;">Chief Nurse, Bicol Medical Center</span>
+      </div>
+    `
+  },
+  concern: {
+    title: 'Patient Concern Response Letter',
+    subtitle: 'Patient Relations Template',
+    content: `
+      <div class="mh">
+        <div class="logo">🏥</div>
+        <div class="org">BICOL MEDICAL CENTER</div>
+        <div class="address">Office of the Medical Director · Quality Assurance Unit</div>
+      </div>
+      <div style="text-align:right;font-size:0.8rem;margin-bottom:16px;">April 28, 2025</div>
+      <div style="margin-bottom:14px;">
+        <strong>Mr. Roberto P. Santos</strong><br>
+        Brgy. Triangulo, Naga City, Camarines Sur
+      </div>
+      <div class="mt">FORMAL RESPONSE TO PATIENT CONCERN</div>
+      <p>Dear Mr. Santos,</p>
+      <p>This is in formal response to your written concern dated April 20, 2025 regarding the extended waiting time your family experienced in our Emergency Room on the evening of April 18, 2025.</p>
+      <p>We sincerely apologize for the inconvenience this caused you and your family. Your experience does not reflect the standard of care we strive to maintain, and we take your concern with the utmost seriousness.</p>
+      <p>Upon thorough investigation, we found that the ER experienced an unprecedented patient surge that evening, with 87 patients presenting within a 3-hour window — significantly above our average capacity of 40. While this does not excuse the extended wait, we are using this as an opportunity to improve.</p>
+      <p><strong>Actions taken:</strong> (1) Additional ER staff assigned during peak hours effective May 1, (2) Triage protocols upgraded per DOH Emergency Care guidelines, (3) Patient liaison officers deployed during surge periods.</p>
+      <p>We value your feedback and remain committed to providing compassionate, timely, and quality healthcare. Should you have further concerns, please contact our Patient Relations Office at (054) 475-0001 loc. 150.</p>
+      <p style="margin-top:20px;">With sincere apologies and warm regards,</p>
+      <div style="margin-top:30px;border-top:1px solid #555;width:220px;padding-top:8px;">
+        <strong>DR. JOSE ANTONIO DIZON, MD, FPCP</strong><br>
+        <span style="font-size:0.75rem;color:#777;">Medical Director, Bicol Medical Center</span>
+      </div>
+    `
+  },
+  email: {
+    title: 'Professional Email Samples',
+    subtitle: 'Email Communication Templates',
+    content: `
+      <div class="mh">
+        <div class="logo">📧</div>
+        <div class="org">PROFESSIONAL EMAIL — LEAVE REQUEST</div>
+        <div class="address">Healthcare Communication Hub · Email Template</div>
+      </div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;font-size:0.8rem;margin-bottom:16px;">
+        <div><strong>FROM:</strong> villanueva.anna@bicolmedcenter.ph</div>
+        <div><strong>TO:</strong> chiefrn@bicolmedcenter.ph</div>
+        <div><strong>SUBJECT:</strong> Request for Leave of Absence — May 20–22, 2025</div>
+        <div><strong>DATE:</strong> May 10, 2025</div>
+      </div>
+      <p>Good morning, Chief Nurse Bautista,</p>
+      <p>I am respectfully requesting a leave of absence from May 20 to 22, 2025 (3 days), for personal medical reasons — specifically to attend post-operative follow-up appointments as advised by my attending physician, Dr. Carlos Rivera of St. Luke's Medical Center.</p>
+      <p>I have already coordinated with RN Mariz Delos Reyes, who has agreed to cover my shifts during the above dates. A copy of my medical certificate and a formal endorsement to my relief nurse will be submitted upon approval.</p>
+      <p>I assure you that all pending responsibilities will be properly endorsed and patient care continuity will not be compromised.</p>
+      <p>I humbly request your favorable consideration of this request. Thank you very much for your understanding and support.</p>
+      <p style="margin-top:12px;">Respectfully yours,<br><strong>RN Anna Marie Villanueva</strong><br>Ward 3, Day Shift · Emp. No. BMC-2018-0342</p>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid #ccc;font-size:0.72rem;color:#888;">
+        CONFIDENTIALITY NOTICE: This email is intended solely for the named recipient. If received in error, please delete immediately and notify the sender.
+      </div>
+    `
+  },
+  'endorsement-email': {
+    title: 'Shift Endorsement Email',
+    subtitle: 'Nursing Communication Template',
+    content: `
+      <div class="mh">
+        <div class="logo">🔄</div>
+        <div class="org">SHIFT ENDORSEMENT EMAIL</div>
+        <div class="address">Ward 4 · Bicol Medical Center</div>
+      </div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;font-size:0.8rem;margin-bottom:16px;">
+        <div><strong>FROM:</strong> villanueva.anna.nightshift@bicolmedcenter.ph</div>
+        <div><strong>TO:</strong> ward4.morningshift@bicolmedcenter.ph</div>
+        <div><strong>CC:</strong> ward4supervisor@bicolmedcenter.ph; chiefrn@bicolmedcenter.ph</div>
+        <div><strong>SUBJECT:</strong> Shift Endorsement — Ward 4 Night Duty to Morning Shift — May 15, 2025</div>
+      </div>
+      <p>Good morning, Ma'am/Sir,</p>
+      <p>Kindly receive this formal shift endorsement for Ward 4 covering the night duty shift from <strong>10:00 PM, May 14</strong> to <strong>6:00 AM, May 15, 2025</strong>.</p>
+      <p><strong>CENSUS:</strong> Total patients — 18 (3 new admissions, 2 discharges, 0 deaths, 0 OR cases)</p>
+      <p><strong>CRITICAL PATIENTS:</strong><br>
+      • Bed 4-B: Mr. G. Ocampo, 67/M — Dyspnea worsening. O2 via nasal cannula at 4L/min ongoing. SpO2 92%. Attending physician Dr. Ramos notified at 3:15 AM. Orders pending.<br>
+      • Bed 4-D: Ms. F. Pascual, 45/F — Post-appendectomy Day 1. Wound dressing done 2:00 AM. Vital signs stable.</p>
+      <p><strong>MEDICATIONS:</strong> All medications administered as per doctor's orders. No medication errors. IV lines all patent. IV fluids running as ordered.</p>
+      <p><strong>PENDING TASKS:</strong><br>
+      • Blood results for Beds 4-A and 4-C — follow up with Lab at 7:00 AM<br>
+      • Consent form for Bed 4-G (scheduled procedure May 15 at 10:00 AM) — not yet signed</p>
+      <p>All nursing notes and kardexes are updated. Narcotic count verified. Please ensure continuity of care for Bed 4-B.</p>
+      <p style="margin-top:12px;">Respectfully endorsed,<br><strong>RN Anna Marie Villanueva</strong><br>Ward 4 · Night Duty Nurse · May 14–15, 2025</p>
+    `
+  },
+  'policy-memo': {
+    title: 'Policy Update Memorandum',
+    subtitle: 'Internal Hospital Memo',
+    content: `
+      <div class="mh">
+        <div class="logo">🏥</div>
+        <div class="org">BICOL MEDICAL CENTER</div>
+        <div class="address">Office of the Medical Director · Hospital Administration</div>
+      </div>
+      <div class="mt">MEMORANDUM</div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;font-size:0.8rem;margin-bottom:16px;font-family:inherit;">
+        <div style="margin-bottom:4px;"><strong>TO:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All Hospital Personnel — Clinical and Administrative</div>
+        <div style="margin-bottom:4px;"><strong>FROM:</strong>&nbsp;&nbsp;Dr. Jose Antonio Dizon, MD — Medical Director</div>
+        <div style="margin-bottom:4px;"><strong>DATE:</strong>&nbsp;&nbsp;&nbsp;May 12, 2025</div>
+        <div><strong>SUBJECT:</strong> IMPLEMENTATION OF NO-PERSONAL-DEVICE POLICY IN PATIENT CARE AREAS — EFFECTIVE MAY 19, 2025</div>
+      </div>
+      <p>This memorandum is issued to formally announce the implementation of the revised <strong>No-Personal-Device Policy</strong> in all patient care areas of Bicol Medical Center, effective Monday, May 19, 2025.</p>
+      <p><strong>COVERAGE:</strong> The policy applies to all areas directly accessible to patients and their families, including wards, ICU, ER, OPD waiting areas, operating theaters, and treatment rooms.</p>
+      <p><strong>KEY PROVISIONS:</strong><br>
+      1. Personal mobile phones must be set to silent mode and must not be used for personal calls, messaging, or social media while on duty in patient care areas.<br>
+      2. Use of personal devices for photography or video recording of patients is strictly prohibited under RA 10173 (Data Privacy Act).<br>
+      3. Official hospital tablets and computers may be used exclusively for clinical documentation and approved hospital communications.<br>
+      4. Violations shall be subject to progressive disciplinary action per the Hospital Employee Handbook, Section 4.3.</p>
+      <p>The cooperation of all hospital personnel is earnestly requested. Questions may be directed to the Human Resource Management Office at local 205.</p>
+      <div style="margin-top:30px;border-top:1px solid #555;width:220px;padding-top:8px;font-family:'Courier New',monospace;font-size:0.8rem;">
+        <strong>DR. JOSE ANTONIO DIZON, MD, FPCP</strong><br>
+        <span style="font-size:0.75rem;color:#777;">Medical Director, Bicol Medical Center</span>
+      </div>
+      <div style="font-size:0.72rem;color:#888;margin-top:12px;">Distribution: All Department Heads, Ward Supervisors, HR Office, Bulletin Boards</div>
+    `
+  },
+  vaccination: {
+    title: 'Vaccination Drive Memorandum',
+    subtitle: 'RHU Public Health Memo',
+    content: `
+      <div class="mh">
+        <div class="logo">💉</div>
+        <div class="org">NAGA CITY RURAL HEALTH UNIT — MAIN</div>
+        <div class="address">City Hall Compound, Naga City · Tel: (054) 871-0002</div>
+      </div>
+      <div class="mt">MEMORANDUM</div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;font-size:0.8rem;margin-bottom:16px;font-family:inherit;">
+        <div style="margin-bottom:4px;"><strong>TO:</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;All Barangay Health Workers (BHWs); Barangay Captains, Barangays 1–27</div>
+        <div style="margin-bottom:4px;"><strong>FROM:</strong>&nbsp;&nbsp;Dr. Ligaya M. Reyes, MD — City Health Officer</div>
+        <div style="margin-bottom:4px;"><strong>DATE:</strong>&nbsp;&nbsp;&nbsp;May 10, 2025</div>
+        <div><strong>SUBJECT:</strong> CITYWIDE MEASLES-RUBELLA AND POLIO SUPPLEMENTAL IMMUNIZATION ACTIVITY (SIA) — MAY 26–30, 2025</div>
+      </div>
+      <p>All concerned are hereby informed of the upcoming <strong>Measles-Rubella (MR) and Oral Polio Vaccine (OPV) Supplemental Immunization Activity</strong> to be conducted citywide from <strong>May 26 to 30, 2025</strong>, pursuant to DOH Memorandum No. 2025-0112.</p>
+      <p><strong>TARGET POPULATION:</strong> All children aged 6 months to 59 months (5 years old), regardless of immunization status.</p>
+      <p><strong>SCHEDULE:</strong><br>
+      • May 26–27: Barangays 1–10 · Venue: Respective Barangay Health Stations<br>
+      • May 28–29: Barangays 11–20 · Venue: Respective Barangay Halls<br>
+      • May 30: Barangays 21–27 · Venue: Naga City RHU Main (catch-up day)</p>
+      <p><strong>ACTION REQUIRED:</strong> All BHWs must (1) conduct house-to-house listing of target children by May 23, (2) attend orientation at RHU on May 24 at 8:00 AM, and (3) ensure cold chain compliance of all vaccines.</p>
+      <p>For concerns, contact the RHU Immunization Coordinator at (054) 871-0002 loc. 10.</p>
+      <div style="margin-top:30px;border-top:1px solid #555;width:220px;padding-top:8px;font-family:'Courier New',monospace;font-size:0.8rem;">
+        <strong>DR. LIGAYA M. REYES, MD, MPH</strong><br>
+        <span style="font-size:0.75rem;color:#777;">City Health Officer, Naga City</span>
+      </div>
+    `
+  },
+  'lab-request': {
+    title: 'Urgent Lab Request Email',
+    subtitle: 'Clinical Communication Email',
+    content: `
+      <div class="mh">
+        <div class="logo">🔬</div>
+        <div class="org">URGENT LAB REQUEST EMAIL</div>
+        <div class="address">Clinical Department · Bicol Medical Center</div>
+      </div>
+      <div style="background:#fff0f0;border:1px solid #fca5a5;border-radius:8px;padding:10px 14px;font-size:0.8rem;margin-bottom:14px;color:#991b1b;font-weight:600;">
+        ⚠️ URGENT — IMMEDIATE ACTION REQUIRED
+      </div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;font-size:0.8rem;margin-bottom:16px;">
+        <div><strong>FROM:</strong> bautista.pedro.md@bicolmedcenter.ph</div>
+        <div><strong>TO:</strong> laboratory@bicolmedcenter.ph</div>
+        <div><strong>CC:</strong> ward3supervisor@bicolmedcenter.ph</div>
+        <div><strong>SUBJECT:</strong> URGENT — Expedited Release of Lab Results, Patient Dela Cruz, Bed 3-A — Possible Sepsis</div>
+        <div><strong>DATE/TIME:</strong> May 15, 2025 · 6:42 AM</div>
+      </div>
+      <p>Good morning,</p>
+      <p>This is to urgently request the expedited processing and release of the following laboratory examinations for patient <strong>Mr. Ramon Dela Cruz</strong> (MRN: BMC-2025-03421), currently admitted in Bed 3-A, Ward 3:</p>
+      <p>
+        1. <strong>Complete Blood Count with Differential</strong> — requested yesterday 6:00 PM (results still pending)<br>
+        2. <strong>Blood Culture and Sensitivity</strong> (aerobic and anaerobic) — collected 4:00 AM today<br>
+        3. <strong>Procalcitonin Level</strong> — STAT, just ordered<br>
+        4. <strong>Serum Lactate</strong> — STAT, just ordered
+      </p>
+      <p>The patient is presenting with fever (39.8°C), hypotension (BP 88/60), tachycardia (HR 118), and altered sensorium — clinical picture strongly suggestive of <strong>septic shock</strong>. Empiric antibiotic therapy has been initiated pending culture results.</p>
+      <p>Kindly prioritize the above and transmit results directly to the ward immediately upon completion. Please call Ward 3 directly at local 341 for verbal reporting of critical values.</p>
+      <p>Your urgent cooperation is greatly appreciated. This is a critical patient situation.</p>
+      <p style="margin-top:12px;">Respectfully,<br><strong>Dr. Pedro Jose Bautista, MD, FPCP, FPCIM</strong><br>Internal Medicine — Infectious Disease<br>Attending Physician, Ward 3</p>
+    `
+  }
+};
+
+/* ---- MODAL FUNCTIONS ---- */
+function openModal(type) {
+  const data = modalData[type];
+  if (!data) return;
+  document.getElementById('modalTitle').textContent = data.title;
+  document.getElementById('modalSubtitle').textContent = data.subtitle;
+  document.getElementById('modalContent').innerHTML = data.content;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+/* ---- GUIDE ACCORDION ---- */
+function toggleGuide(header) {
+  const card = header.parentElement;
+  const wasOpen = card.classList.contains('open');
+  document.querySelectorAll('.guide-card').forEach(c => c.classList.remove('open'));
+  if (!wasOpen) card.classList.add('open');
+}
+
+/* ---- LETTER TABS ---- */
+function switchTab(btn, tabId) {
+  document.querySelectorAll('.letter-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.doc-paper').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+/* ---- MEMO SWITCHER ---- */
+const memoContent = {
+  meeting: {
+    to: 'All Nursing Staff, Ward 3 & 4',
+    from: 'Maria B. Reyes, RN, MAN — Chief Nurse',
+    date: 'May 5, 2025',
+    subject: 'MANDATORY STAFF MEETING — Hand Hygiene Compliance Audit',
+    body: `<p>This is to inform all nursing personnel in Wards 3 and 4 that a mandatory staff meeting will be held on <strong>May 10, 2025, at 2:00 PM</strong> in the Nursing Conference Room, 2nd Floor.</p>
+    <p>The agenda includes: (1) review of the recent hand hygiene compliance audit results, (2) identification of areas for improvement, and (3) refresher on standard infection prevention protocols per DOH guidelines.</p>
+    <p>Attendance is strictly required. Staff on duty shall coordinate with the ward supervisor for relief coverage. Please bring your nursing notes and last month's incident reports.</p>
+    <p style="margin-top:12px;"><strong>Non-attendance without valid excuse will be noted in the personnel file.</strong></p>
+    <div style="margin-top:20px;border-top:1px solid #aaa;width:180px;padding-top:6px;"><strong>MARIA B. REYES, RN, MAN</strong><br><span style="font-size:0.75rem;color:#888;">Chief Nurse</span></div>`
+  },
+  policy: {
+    to: 'All Hospital Personnel',
+    from: 'Dr. Jose Antonio Dizon, MD — Medical Director',
+    date: 'May 12, 2025',
+    subject: 'IMPLEMENTATION OF NO-PERSONAL-DEVICE POLICY — EFFECTIVE MAY 19, 2025',
+    body: `<p>This memorandum announces the implementation of the revised <strong>No-Personal-Device Policy</strong> in all patient care areas, effective May 19, 2025.</p>
+    <p>Personal mobile phones must be set to silent and must not be used for personal calls or social media while on duty in patient areas. Violations are subject to disciplinary action per Hospital Employee Handbook, Section 4.3.</p>
+    <p>The cooperation of all personnel is earnestly requested. Direct questions to HRMO at local 205.</p>
+    <div style="margin-top:20px;border-top:1px solid #aaa;width:180px;padding-top:6px;"><strong>DR. JOSE ANTONIO DIZON, MD</strong><br><span style="font-size:0.75rem;color:#888;">Medical Director</span></div>`
+  },
+  schedule: {
+    to: 'All Nursing Personnel, Ward 5 (Medical Floor)',
+    from: 'Ana Clara Perez, RN — Ward Supervisor',
+    date: 'May 9, 2025',
+    subject: 'DUTY SCHEDULE REMINDER — 3RD WEEK OF MAY 2025 (MAY 19–25)',
+    body: `<p>This is to remind all nursing staff of their confirmed duty assignments for the period <strong>May 19–25, 2025</strong>.</p>
+    <p>Kindly review the updated duty schedule posted on the Ward 5 bulletin board and the official hospital scheduling system (portal.bicolmedcenter.ph). Any conflicts or requests for schedule adjustment must be submitted in writing to the ward supervisor no later than <strong>May 14, 2025</strong>.</p>
+    <p>Staff are reminded that unauthorized absences and tardiness will be reflected in the monthly performance report. Ensure proper endorsement before and after every shift.</p>
+    <div style="margin-top:20px;border-top:1px solid #aaa;width:180px;padding-top:6px;"><strong>ANA CLARA PEREZ, RN</strong><br><span style="font-size:0.75rem;color:#888;">Ward 5 Supervisor</span></div>`
+  },
+  infection: {
+    to: 'All Clinical Staff — Doctors, Nurses, Allied Health',
+    from: 'Infection Control Committee — Dr. Rosa Andrada, Chair',
+    date: 'May 8, 2025',
+    subject: 'ADVISORY — HEIGHTENED INFECTION CONTROL MEASURES AMID INCREASED RESPIRATORY ILLNESS CASES',
+    body: `<p>Due to the reported increase in respiratory illness cases (Influenza A/B and COVID-19 variants) in Camarines Sur, this committee is issuing the following <strong>HEIGHTENED INFECTION CONTROL ADVISORY</strong> effective immediately:</p>
+    <p>1. Surgical masks required for ALL personnel in patient care areas at all times.<br>
+    2. N95 respirators mandatory for aerosol-generating procedures (suctioning, intubation, nebulization).<br>
+    3. Hand hygiene compliance to be monitored hourly by ward supervisors.<br>
+    4. All patients presenting with respiratory symptoms must be placed in isolation rooms pending assessment.</p>
+    <p>Failure to comply with these measures will be escalated to the Medical Director. Patient safety is our highest priority.</p>
+    <div style="margin-top:20px;border-top:1px solid #aaa;width:220px;padding-top:6px;"><strong>DR. ROSA L. ANDRADA, MD, FPCP, FIDSA</strong><br><span style="font-size:0.75rem;color:#888;">Chair, Infection Control Committee</span></div>`
+  }
+};
+
+function switchMemo(el, type) {
+  document.querySelectorAll('.memo-ex-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  const d = memoContent[type];
+  document.getElementById('memoFields').innerHTML = `
+    <div class="memo-field"><span class="memo-label">TO:</span><span class="memo-value">${d.to}</span></div>
+    <div class="memo-field"><span class="memo-label">FROM:</span><span class="memo-value">${d.from}</span></div>
+    <div class="memo-field"><span class="memo-label">DATE:</span><span class="memo-value">${d.date}</span></div>
+    <div class="memo-field"><span class="memo-label">SUBJECT:</span><span class="memo-value">${d.subject}</span></div>
+  `;
+  document.getElementById('memoBody').innerHTML = d.body;
+}
+
+/* ---- BLOG SEARCH & FILTER ---- */
+const searchInput = document.getElementById('searchInput');
+const blogCards = document.querySelectorAll('.blog-card');
+const noResults = document.getElementById('noResults');
+const filterBtns = document.querySelectorAll('.filter-btn');
+let currentFilter = 'all';
+
+function filterBlog() {
+  const query = searchInput.value.toLowerCase().trim();
+  let visible = 0;
+  blogCards.forEach(card => {
+    const tags = card.dataset.tags.toLowerCase();
+    const title = card.querySelector('.blog-title').textContent.toLowerCase();
+    const exc = card.querySelector('.blog-excerpt').textContent.toLowerCase();
+    const matchesSearch = !query || tags.includes(query) || title.includes(query) || exc.includes(query);
+    const matchesFilter = currentFilter === 'all' || tags.includes(currentFilter);
+    if (matchesSearch && matchesFilter) { card.hidden = false; visible++; }
+    else { card.hidden = true; }
+  });
+  noResults.classList.toggle('show', visible === 0);
+}
+
+searchInput.addEventListener('input', filterBlog);
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    filterBlog();
+  });
+});
+
+/* ---- NAVIGATION ---- */
+const navbar = document.getElementById('navbar');
+const navLinksAll = document.querySelectorAll('.nav-links a');
+const sections = document.querySelectorAll('section[id], footer[id]');
+
+window.addEventListener('scroll', () => {
+  // Scrolled class
+  navbar.classList.toggle('scrolled', window.scrollY > 20);
+  // Back to top
+  document.getElementById('back-to-top').classList.toggle('visible', window.scrollY > 300);
+  // Active nav highlight
+  let current = '';
+  sections.forEach(sec => {
+    if (window.scrollY >= sec.offsetTop - 100) current = sec.getAttribute('id');
+  });
+  navLinksAll.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+});
+
+/* ---- MOBILE MENU ---- */
+const menuBtn = document.getElementById('menuBtn');
+const mobileMenu = document.getElementById('mobileMenu');
+menuBtn.addEventListener('click', () => {
+  mobileMenu.classList.toggle('open');
+  menuBtn.textContent = mobileMenu.classList.contains('open') ? '✕' : '☰';
+});
+mobileMenu.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    mobileMenu.classList.remove('open');
+    menuBtn.textContent = '☰';
+  });
+});
+
+/* ---- SCROLL REVEAL ---- */
+const reveals = document.querySelectorAll('.reveal');
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 60);
+    }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(el => revealObs.observe(el));
+
+/* ---- ESC TO CLOSE MODAL ---- */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+</script>
+</body>
+</html>
